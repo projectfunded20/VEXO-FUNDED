@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
@@ -561,9 +562,12 @@ export function SupportNew() {
           }}
         >
           {create.isError && (
-            <p className="rounded-md border border-error/30 bg-error/10 p-3 text-sm text-error">
-              We could not save this ticket. Please try again.
-            </p>
+            <div className="flex items-start gap-3 rounded-lg border border-brand/35 bg-panel-raised/90 p-3.5 text-sm shadow-sm">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+              <span className="font-medium text-bright leading-relaxed">
+                We could not save this ticket. Please try again.
+              </span>
+            </div>
           )}
           <Field
             label="Subject"

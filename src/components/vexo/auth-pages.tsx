@@ -1,14 +1,12 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { CheckCircle2, Loader2, Mail } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, Mail } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import {
   auth,
   db,
-  googleProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
   sendPasswordResetEmail,
   updatePassword,
   updateProfile,
@@ -17,68 +15,55 @@ import { AuthShell } from "./layouts";
 import { Button, Field } from "./ui";
 
 function Alert({ message }: { message: string }) {
+  if (!message) return null;
   return (
-    <p className="rounded-md border border-error/30 bg-error/10 p-3 text-sm text-error">
-      {message}
-    </p>
+    <div className="flex items-start gap-3 rounded-lg border border-brand/35 bg-panel-raised/90 p-3.5 text-sm shadow-sm">
+      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+      <span className="font-medium text-bright leading-relaxed">{message}</span>
+    </div>
   );
 }
 
-function Divider() {
-  return (
-    <div className="my-6 flex items-center gap-3">
-      <i className="h-px flex-1 bg-line" />
-      <span className="text-xs text-dim">or continue with</span>
-      <i className="h-px flex-1 bg-line" />
-    </div>
-  );
+function cleanAuthError(err: unknown, fallback: string): string {
+  if (!err) return "";
+  const raw = err instanceof Error ? err.message : String(err);
+  if (
+    raw.includes("user-not-found") ||
+    raw.includes("wrong-password") ||
+    raw.includes("invalid-credential") ||
+    raw.includes("INVALID_LOGIN_CREDENTIALS")
+  ) {
+    return "Invalid email or password. Please check your credentials and try again.";
+  }
+  if (raw.includes("email-already-in-use")) {
+    return "An account with this email address already exists. Please sign in.";
+  }
+  if (raw.includes("weak-password")) {
+    return "Password should be at least 8 characters long.";
+  }
+  if (raw.includes("invalid-email")) {
+    return "Please enter a valid email address.";
+  }
+  if (raw.includes("too-many-requests")) {
+    return "Access temporarily locked due to multiple failed attempts. Please try again later.";
+  }
+  if (raw.includes("network-request-failed")) {
+    return "Network connection error. Please check your internet connection.";
+  }
+  if (raw.includes("user-disabled")) {
+    return "This account has been disabled. Please contact support.";
+  }
+  const cleaned = raw
+    .replace(/^Firebase:\s*/i, "")
+    .replace(/^Error\s*\([^)]+\):\s*/i, "")
+    .trim();
+  return cleaned || fallback;
 }
 
 function safePath(value: unknown): string | null {
   return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
     ? value
     : null;
-}
-
-function useGoogle(setError: (value: string) => void) {
-  const [busy, setBusy] = useState(false);
-  return {
-    busy,
-    run: async () => {
-      setBusy(true);
-      setError("");
-      try {
-        const result = await signInWithPopup(auth, googleProvider);
-        if (result.user) {
-          // Initialize profile doc if missing
-          try {
-            await setDoc(
-              doc(db, "profiles", result.user.uid),
-              {
-                id: result.user.uid,
-                email: result.user.email,
-                full_name: result.user.displayName,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-              { merge: true },
-            );
-          } catch {
-            // ignore
-          }
-          window.location.assign("/dashboard");
-        }
-      } catch (err: unknown) {
-        setBusy(false);
-        const msg = err instanceof Error ? err.message : "Google sign-in could not be completed.";
-        if (msg.includes("popup-closed-by-user") || msg.includes("cancelled-popup-request")) {
-          setError("Google sign-in was cancelled.");
-        } else {
-          setError("Google sign-in could not be completed. Please try again.");
-        }
-      }
-    },
-  };
 }
 
 export function Login() {
@@ -89,7 +74,6 @@ export function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const google = useGoogle(setError);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -101,18 +85,7 @@ export function Login() {
       nav({ to: target });
     } catch (err: unknown) {
       setBusy(false);
-      const msg = err instanceof Error ? err.message : "Sign in failed";
-      if (
-        msg.includes("user-not-found") ||
-        msg.includes("wrong-password") ||
-        msg.includes("invalid-credential")
-      ) {
-        setError("That email and password combination does not match an account.");
-      } else if (msg.includes("invalid-email")) {
-        setError("Please enter a valid email address.");
-      } else {
-        setError(msg);
-      }
+      setError(cleanAuthError(err, "Sign in failed. Please check your credentials and try again."));
     }
   };
 
@@ -148,10 +121,6 @@ export function Login() {
           {busy ? <Loader2 className="animate-spin" size={16} /> : null}Sign In
         </Button>
       </form>
-      <Divider />
-      <Button variant="secondary" className="w-full" onClick={google.run} disabled={google.busy}>
-        Continue with Google
-      </Button>
       <p className="mt-7 text-center text-sm text-muted">
         Don't have an account?{" "}
         <Link to="/signup" className="text-brand">
@@ -173,7 +142,6 @@ export function Signup() {
   });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const google = useGoogle(setError);
   const set = (key: keyof typeof form) => (event: { target: { value: string } }) =>
     setForm({ ...form, [key]: event.target.value });
 
@@ -215,16 +183,9 @@ export function Signup() {
       nav({ to: "/dashboard" });
     } catch (err: unknown) {
       setBusy(false);
-      const msg = err instanceof Error ? err.message : "Registration failed";
-      if (msg.includes("email-already-in-use")) {
-        setError("An account with that email address already exists.");
-      } else if (msg.includes("weak-password")) {
-        setError("Password should be at least 6 characters.");
-      } else if (msg.includes("invalid-email")) {
-        setError("Please enter a valid email address.");
-      } else {
-        setError(msg);
-      }
+      setError(
+        cleanAuthError(err, "Registration failed. Please check your information and try again."),
+      );
     }
   };
 
@@ -289,10 +250,6 @@ export function Signup() {
           {busy ? <Loader2 className="animate-spin" size={16} /> : null}Create Account
         </Button>
       </form>
-      <Divider />
-      <Button variant="secondary" className="w-full" onClick={google.run} disabled={google.busy}>
-        Continue with Google
-      </Button>
       <p className="mt-6 text-center text-sm text-muted">
         Already have an account?{" "}
         <Link to="/login" className="text-brand">
@@ -324,7 +281,7 @@ export function Forgot() {
         // Do not leak existence, show sent
         setSent(true);
       } else {
-        setError(msg);
+        setError(cleanAuthError(err, "Could not send reset email. Please try again."));
       }
     }
   };
@@ -395,7 +352,7 @@ export function ResetPassword() {
       }
     } catch (err: unknown) {
       setBusy(false);
-      setError(err instanceof Error ? err.message : "Could not update password.");
+      setError(cleanAuthError(err, "Could not update password. Please try again."));
     }
   };
 

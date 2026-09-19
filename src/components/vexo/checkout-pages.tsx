@@ -1,9 +1,18 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, Copy, Loader2, Lock, QrCode, Tag } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Check, Copy, Loader2, Lock, Tag } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { SiteLayout } from "./layouts";
 import { Badge, Button, Card, cn } from "./ui";
-import { brokers, challengePlans, crypto, instantPlans, money, type Plan } from "@/lib/vexo-data";
+import {
+  assets,
+  brokers,
+  challengePlans,
+  crypto,
+  instantPlans,
+  money,
+  type Plan,
+} from "@/lib/vexo-data";
 import { createOrder } from "@/lib/vexo-api";
 const defaultPlan: Plan = {
   size: 20000,
@@ -13,11 +22,11 @@ const defaultPlan: Plan = {
   type: "instant",
   popular: true,
 };
-const defaultMethod = {
+const defaultMethod = crypto[0] ?? {
   id: "USDT TRC20",
   network: "TRON Network (TRC-20)",
-  logo: "",
-  address: "TDemoVEXOFundedPreviewWalletTRC20",
+  logo: assets.usdt,
+  address: "TBHcM1qTtkJnATrnDw41D5tNzSkd7UJkay",
 };
 function getPlan(raw?: string): Plan {
   const [type, size] = String(raw || "instant-20000").split("-");
@@ -258,9 +267,10 @@ export function DepositStep() {
                 <Badge tone="brand">Broker: {s.broker || "Pocket Option"}</Badge>
               </div>
               {error && (
-                <p className="mt-4 rounded-md border border-error/30 bg-error/10 p-3 text-sm text-error">
-                  {error}
-                </p>
+                <div className="mt-4 flex items-start gap-3 rounded-lg border border-brand/35 bg-panel-raised/90 p-3.5 text-sm shadow-sm">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+                  <span className="font-medium text-bright leading-relaxed">{error}</span>
+                </div>
               )}
               <div className="mt-6 rounded-xl border border-brand/30 bg-surface p-5">
                 <div className="flex justify-between border-b border-line pb-4">
@@ -277,8 +287,14 @@ export function DepositStep() {
                   </div>
                 </div>
                 <div className="mt-5 flex flex-col gap-5 md:flex-row">
-                  <div className="grid h-44 w-44 shrink-0 place-items-center rounded-xl bg-bright text-ink">
-                    <QrCode size={120} />
+                  <div className="grid h-44 w-44 shrink-0 place-items-center rounded-xl bg-white p-3 text-ink shadow-inner">
+                    <QRCodeSVG
+                      value={method.address}
+                      size={152}
+                      level="M"
+                      includeMargin={false}
+                      className="h-full w-full"
+                    />
                   </div>
                   <div className="flex-1">
                     <label className="text-xs font-semibold">

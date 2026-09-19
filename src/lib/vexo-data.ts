@@ -1,20 +1,20 @@
-import pocketoption from "@/assets/broker-pocketoption.png.asset.json";
-import quotex from "@/assets/broker-quotex.png.asset.json";
-import binomo from "@/assets/broker-binomo.png.asset.json";
-import olymptrade from "@/assets/broker-olymptrade.png.asset.json";
-import tradowix from "@/assets/broker-tradowix.jpg.asset.json";
-import btc from "@/assets/crypto-btc.png.asset.json";
-import eth from "@/assets/crypto-eth.png.asset.json";
-import usdt from "@/assets/crypto-usdt.png.asset.json";
+import pocketoption from "@/assets/broker-pocketoption.png";
+import quotex from "@/assets/broker-quotex.png";
+import binomo from "@/assets/broker-binomo.png";
+import olymptrade from "@/assets/broker-olymptrade.png";
+import tradowix from "@/assets/broker-tradowix.jpg";
+import btc from "@/assets/crypto-btc.png";
+import eth from "@/assets/crypto-eth.png";
+import usdt from "@/assets/crypto-usdt.png";
 export const assets = {
-  pocketoption: pocketoption.url,
-  quotex: quotex.url,
-  binomo: binomo.url,
-  olymptrade: olymptrade.url,
-  tradowix: tradowix.url,
-  btc: btc.url,
-  eth: eth.url,
-  usdt: usdt.url,
+  pocketoption,
+  quotex,
+  binomo,
+  olymptrade,
+  tradowix,
+  btc,
+  eth,
+  usdt,
 };
 export type Plan = {
   size: number;
@@ -322,30 +322,30 @@ export const crypto = [
     id: "USDT ERC20",
     network: "Ethereum Network (ERC-20)",
     logo: assets.usdt,
-    address: "0xD3MO2026FUND3D00000000000000000000ERC20",
+    address: "0x40A4B8fA017de9614525E12aB674FE3196E3D76b",
   },
   {
     id: "USDT TRC20",
     network: "TRON Network (TRC-20)",
     logo: assets.usdt,
-    address: "TDemoVEXOFundedPreviewWalletTRC20",
+    address: "TBHcM1qTtkJnATrnDw41D5tNzSkd7UJkay",
   },
   {
     id: "USDT BEP20",
     network: "BNB Smart Chain (BEP-20)",
     logo: assets.usdt,
-    address: "0xD3MO2026FUND3D00000000000000000000BEP20",
+    address: "0x40A4B8fA017de9614525E12aB674FE3196E3D76b",
   },
   {
     id: "Bitcoin",
     network: "Bitcoin Mainnet",
     logo: assets.btc,
-    address: "bc1qdemoonlyvexofundedpreviewwallet",
+    address: "bc1q2j9tpxlw8twr9kwkxq4hrtap2dxgjah2x9ap8p",
   },
   {
     id: "Ethereum",
     network: "Ethereum Mainnet",
     logo: assets.eth,
-    address: "0xD3MO2026FUND3D00000000000000000000ETH",
+    address: "0x40A4B8fA017de9614525E12aB674FE3196E3D76b",
   },
 ];
