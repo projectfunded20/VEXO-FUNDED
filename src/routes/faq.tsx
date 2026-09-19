@@ -1,0 +1,21 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { FAQ } from "@/components/vexo/public-pages";
+export const Route = createFileRoute("/faq")({
+  head: () => ({
+    meta: [
+      { title: "FAQ — VEXO FUNDED" },
+      {
+        name: "description",
+        content: "Answers about VEXO FUNDED accounts, rules, brokers, and payouts.",
+      },
+      { property: "og:title", content: "FAQ — VEXO FUNDED" },
+      {
+        property: "og:description",
+        content: "Answers about VEXO FUNDED accounts, rules, brokers, and payouts.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => <FAQ />,
+});

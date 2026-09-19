@@ -1,0 +1,15 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { LegalPage } from "@/components/vexo/legal-status";
+export const Route = createFileRoute("/legal/privacy")({
+  head: () => ({
+    meta: [
+      { title: "Privacy Agreement — VEXO FUNDED" },
+      { name: "description", content: "Privacy Agreement for VEXO FUNDED customers." },
+      { property: "og:title", content: "Privacy Agreement — VEXO FUNDED" },
+      { property: "og:description", content: "Privacy Agreement for VEXO FUNDED customers." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => <LegalPage kind="privacy" />,
+});

@@ -1,0 +1,15 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Brokers } from "@/components/vexo/public-pages";
+export const Route = createFileRoute("/brokers")({
+  head: () => ({
+    meta: [
+      { title: "Brokers — VEXO FUNDED" },
+      { name: "description", content: "Explore supported VEXO FUNDED broker environments." },
+      { property: "og:title", content: "Brokers — VEXO FUNDED" },
+      { property: "og:description", content: "Explore supported VEXO FUNDED broker environments." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => <Brokers />,
+});

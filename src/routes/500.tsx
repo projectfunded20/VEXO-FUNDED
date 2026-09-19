@@ -1,0 +1,15 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { StatusPage } from "@/components/vexo/legal-status";
+export const Route = createFileRoute("/500")({
+  head: () => ({
+    meta: [
+      { title: "Server Error — VEXO FUNDED" },
+      { name: "description", content: "VEXO FUNDED service status page." },
+      { property: "og:title", content: "Server Error — VEXO FUNDED" },
+      { property: "og:description", content: "VEXO FUNDED service status page." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => <StatusPage kind="500" />,
+});

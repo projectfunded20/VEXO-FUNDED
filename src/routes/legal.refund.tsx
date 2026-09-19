@@ -1,0 +1,15 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { LegalPage } from "@/components/vexo/legal-status";
+export const Route = createFileRoute("/legal/refund")({
+  head: () => ({
+    meta: [
+      { title: "Refund Policy — VEXO FUNDED" },
+      { name: "description", content: "Refund Policy for VEXO FUNDED customers." },
+      { property: "og:title", content: "Refund Policy — VEXO FUNDED" },
+      { property: "og:description", content: "Refund Policy for VEXO FUNDED customers." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => <LegalPage kind="refund" />,
+});

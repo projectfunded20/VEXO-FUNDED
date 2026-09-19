@@ -1,0 +1,6 @@
+{
+  "name": "Prop UI Palette",
+  "description": "VEXO FUNDED proprietary trading firm platform with instant funding, challenge accounts, order tracking, and live desk support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

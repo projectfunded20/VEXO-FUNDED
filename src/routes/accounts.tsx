@@ -1,0 +1,21 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Accounts } from "@/components/vexo/public-pages";
+export const Route = createFileRoute("/accounts")({
+  head: () => ({
+    meta: [
+      { title: "Trading Accounts — VEXO FUNDED" },
+      {
+        name: "description",
+        content: "Compare VEXO FUNDED Instant and Challenge account sizes, prices, and rules.",
+      },
+      { property: "og:title", content: "Trading Accounts — VEXO FUNDED" },
+      {
+        property: "og:description",
+        content: "Compare VEXO FUNDED Instant and Challenge account sizes, prices, and rules.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => <Accounts />,
+});

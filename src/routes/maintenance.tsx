@@ -1,0 +1,15 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { StatusPage } from "@/components/vexo/legal-status";
+export const Route = createFileRoute("/maintenance")({
+  head: () => ({
+    meta: [
+      { title: "Maintenance — VEXO FUNDED" },
+      { name: "description", content: "VEXO FUNDED scheduled maintenance notice." },
+      { property: "og:title", content: "Maintenance — VEXO FUNDED" },
+      { property: "og:description", content: "VEXO FUNDED scheduled maintenance notice." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => <StatusPage kind="maintenance" />,
+});
