@@ -123,7 +123,11 @@ export function Login() {
       </form>
       <p className="mt-7 text-center text-sm text-muted">
         Don't have an account?{" "}
-        <Link to="/signup" className="text-brand">
+        <Link
+          to="/signup"
+          search={search?.redirect ? { redirect: search.redirect } : undefined}
+          className="text-brand"
+        >
           Get funded
         </Link>
       </p>
@@ -133,6 +137,7 @@ export function Login() {
 
 export function Signup() {
   const nav = useNavigate();
+  const search = useSearch({ strict: false }) as { redirect?: string };
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -180,7 +185,8 @@ export function Signup() {
         // ignore
       }
       setBusy(false);
-      nav({ to: "/dashboard" });
+      const target = safePath(search?.redirect) ?? "/dashboard";
+      nav({ to: target });
     } catch (err: unknown) {
       setBusy(false);
       setError(
@@ -252,7 +258,11 @@ export function Signup() {
       </form>
       <p className="mt-6 text-center text-sm text-muted">
         Already have an account?{" "}
-        <Link to="/login" className="text-brand">
+        <Link
+          to="/login"
+          search={search?.redirect ? { redirect: search.redirect } : undefined}
+          className="text-brand"
+        >
           Sign in
         </Link>
       </p>

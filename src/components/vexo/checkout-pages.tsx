@@ -242,7 +242,10 @@ export function DepositStep() {
         payment_method: method.id,
         coupon: s.coupon ?? null,
       });
-      nav({ to: "/dashboard/orders/$id", params: { id: order.reference } });
+      nav({
+        to: "/dashboard",
+        search: { payment: "processed", order: order.reference },
+      });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "We could not submit this order. Please try again.",

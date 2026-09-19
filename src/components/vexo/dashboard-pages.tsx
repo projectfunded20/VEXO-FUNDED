@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate, useParams } from "@tanstack/react-router";
+import { Link, useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -16,6 +16,7 @@ import {
   Paperclip,
   ShieldCheck,
   TrendingUp,
+  X,
   XCircle,
 } from "lucide-react";
 import { Badge, Button, Card, Field, Status, cn } from "./ui";
@@ -70,6 +71,10 @@ function Empty({
 
 export function Overview() {
   const { user } = useSession();
+  const search = useSearch({ strict: false }) as { payment?: string; order?: string };
+  const [dismissed, setDismissed] = useState(false);
+  const showPaymentNotice = Boolean(search?.payment === "processed" && !dismissed);
+
   const orders = useQuery({ queryKey: ["orders"], queryFn: fetchOrders });
   const tickets = useQuery({ queryKey: ["tickets"], queryFn: fetchTickets });
   const rows = orders.data ?? [];
@@ -78,6 +83,51 @@ export function Overview() {
 
   return (
     <div className="space-y-8">
+      {showPaymentNotice && (
+        <div className="relative flex flex-col justify-between gap-4 rounded-xl border border-brand/35 bg-panel-raised/95 p-5 shadow-lg sm:flex-row sm:items-center">
+          <div className="flex items-start gap-3.5 sm:items-center">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-brand/30 bg-brand/15 text-brand">
+              <CheckCircle2 size={22} />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-display text-base font-semibold text-bright">
+                  Your payment has been processed
+                </h3>
+                {search.order && (
+                  <span className="num rounded border border-brand/30 bg-brand/15 px-2 py-0.5 font-mono text-xs text-brand-soft">
+                    {search.order}
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-xs text-muted">
+                Your order has been submitted for desk verification. Your new account details will
+                update below shortly.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {search.order && (
+              <Button
+                to="/dashboard/orders/$id"
+                params={{ id: search.order }}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                View Order
+              </Button>
+            )}
+            <button
+              onClick={() => setDismissed(true)}
+              className="rounded-lg p-1.5 text-muted transition hover:bg-soft hover:text-bright"
+              aria-label="Dismiss notice"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
       <div>
         <h1 className="font-display text-2xl font-semibold">{nameOf(user)}</h1>
         <p className="mt-1 text-sm text-muted">
