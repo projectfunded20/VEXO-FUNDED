@@ -66,6 +66,16 @@ function safePath(value: unknown): string | null {
     : null;
 }
 
+function navigateSafe(nav: ReturnType<typeof useNavigate>, target: string) {
+  if (target.includes("?")) {
+    const [pathname, queryString] = target.split("?");
+    const searchParams = Object.fromEntries(new URLSearchParams(queryString).entries());
+    nav({ to: pathname as never, search: searchParams as never });
+  } else {
+    nav({ to: target as never });
+  }
+}
+
 export function Login() {
   const nav = useNavigate();
   const search = useSearch({ strict: false }) as { redirect?: string };
@@ -82,7 +92,7 @@ export function Login() {
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       setBusy(false);
-      nav({ to: target });
+      navigateSafe(nav, target);
     } catch (err: unknown) {
       setBusy(false);
       setError(cleanAuthError(err, "Sign in failed. Please check your credentials and try again."));
@@ -186,7 +196,7 @@ export function Signup() {
       }
       setBusy(false);
       const target = safePath(search?.redirect) ?? "/dashboard";
-      nav({ to: target });
+      navigateSafe(nav, target);
     } catch (err: unknown) {
       setBusy(false);
       setError(

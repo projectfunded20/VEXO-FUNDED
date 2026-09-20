@@ -10,7 +10,12 @@ import {
   orderBy,
   limit,
 } from "firebase/firestore";
-import { db, auth, getCurrentUser, updateProfile as firebaseUpdateProfile } from "@/integrations/firebase/client";
+import {
+  db,
+  auth,
+  getCurrentUser,
+  updateProfile as firebaseUpdateProfile,
+} from "@/integrations/firebase/client";
 
 export type OrderStatus = "pending" | "processing" | "waiting_callback" | "completed" | "rejected";
 
@@ -64,7 +69,9 @@ export function reviewCountdown(
 
   const decisionAtMs = order.decision_at
     ? Date.parse(order.decision_at)
-    : (order.created_at ? Date.parse(order.created_at) + 60 * 60 * 1000 : 0);
+    : order.created_at
+      ? Date.parse(order.created_at) + 60 * 60 * 1000
+      : 0;
 
   const ms = decisionAtMs - Date.now();
   if (ms <= 0) return null;
@@ -74,7 +81,11 @@ export function reviewCountdown(
 
 export const shortDate = (iso: string) => {
   try {
-    return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    return new Date(iso).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   } catch {
     return iso;
   }
@@ -118,8 +129,8 @@ export async function fetchOrders(): Promise<OrderRow[]> {
   const cached = getLocal<OrderRow[]>("vexo_firebase_orders", []);
 
   try {
-    let ordersRef = collection(db, "orders");
-    let q = user?.uid
+    const ordersRef = collection(db, "orders");
+    const q = user?.uid
       ? query(ordersRef, where("user_id", "==", user.uid))
       : query(ordersRef, limit(20));
 
@@ -147,7 +158,7 @@ export async function fetchOrders(): Promise<OrderRow[]> {
     }
 
     // Sort by created_at desc
-    combined.sort((a, b) => (Date.parse(b.created_at || "0") - Date.parse(a.created_at || "0")));
+    combined.sort((a, b) => Date.parse(b.created_at || "0") - Date.parse(a.created_at || "0"));
 
     // Process 1-hour auto-rejection & sync back to Firestore
     const results: OrderRow[] = combined.map((o) => {
@@ -168,15 +179,27 @@ export async function fetchOrders(): Promise<OrderRow[]> {
   }
 }
 
-export async function fetchOrder(reference: string): Promise<OrderRow | null> {
+export async function fetchOrder(refOrId: string): Promise<OrderRow | null> {
   const cached = getLocal<OrderRow[]>("vexo_firebase_orders", []);
-  const localMatch = cached.find((o) => o.reference === reference);
+  const localMatch = cached.find((o) => o.reference === refOrId || o.id === refOrId);
 
   try {
-    const q = query(collection(db, "orders"), where("reference", "==", reference), limit(1));
+    const q = query(collection(db, "orders"), where("reference", "==", refOrId), limit(1));
     const snap = await getDocs(q);
 
     if (snap.empty) {
+      // Also try fetching by doc ID in Firestore
+      try {
+        const directDoc = await getDoc(doc(db, "orders", refOrId));
+        if (directDoc.exists()) {
+          const order: OrderRow = { ...(directDoc.data() as OrderRow), id: directDoc.id };
+          const computed = effectiveStatus(order);
+          order.status = computed;
+          return order;
+        }
+      } catch (err) {
+        console.debug("Direct order id lookup failed:", err);
+      }
       if (localMatch) {
         return { ...localMatch, status: effectiveStatus(localMatch) };
       }
@@ -310,7 +333,11 @@ export async function fetchTicket(reference: string) {
   const cachedMessages = getLocal<MessageRow[]>("vexo_firebase_messages", []);
 
   try {
-    const q = query(collection(db, "support_tickets"), where("reference", "==", reference), limit(1));
+    const q = query(
+      collection(db, "support_tickets"),
+      where("reference", "==", reference),
+      limit(1),
+    );
     const snap = await getDocs(q);
 
     let ticket: TicketRow | null = null;

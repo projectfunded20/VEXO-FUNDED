@@ -185,7 +185,11 @@ export function PaymentStep() {
             ))}
           </div>
           <div className="mt-8 grid grid-cols-3 gap-4">
-            <Button to={`/checkout/details?plan=${s.plan}`} variant="secondary">
+            <Button
+              to="/checkout/details"
+              search={s.plan ? { plan: s.plan } : undefined}
+              variant="secondary"
+            >
               <ArrowLeft size={18} />
               Back
             </Button>
@@ -343,7 +347,11 @@ export function DepositStep() {
               </label>
             </Card>
             <div className="mt-6 grid grid-cols-3 gap-4">
-              <Button to={`/checkout/payment?plan=${s.plan}`} variant="secondary">
+              <Button
+                to="/checkout/payment"
+                search={s.plan ? { plan: s.plan } : undefined}
+                variant="secondary"
+              >
                 <ArrowLeft />
                 Back
               </Button>

@@ -48,6 +48,8 @@ const variants = {
 };
 export function Button({
   to,
+  search,
+  params,
   variant = "primary",
   size = "md",
   className,
@@ -55,6 +57,8 @@ export function Button({
   ...p
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   to?: string;
+  search?: Record<string, unknown>;
+  params?: Record<string, unknown>;
   variant?: keyof typeof variants;
   size?: "sm" | "md" | "lg";
   children: ReactNode;
@@ -69,11 +73,27 @@ export function Button({
         : "px-5 py-2.5 text-xs",
     className,
   );
-  return to ? (
-    <Link to={to} className={c}>
-      {children}
-    </Link>
-  ) : (
+  if (to) {
+    let pathname = to;
+    let queryParams: Record<string, unknown> | undefined = search;
+    if (pathname.includes("?")) {
+      const [pPart, qPart] = pathname.split("?");
+      pathname = pPart;
+      const parsed = Object.fromEntries(new URLSearchParams(qPart).entries());
+      queryParams = { ...parsed, ...(search ?? {}) };
+    }
+    return (
+      <Link
+        to={pathname as never}
+        search={queryParams as never}
+        params={params as never}
+        className={c}
+      >
+        {children}
+      </Link>
+    );
+  }
+  return (
     <button className={c} {...p}>
       {children}
     </button>
@@ -213,7 +233,11 @@ export function AccountCard({ plan }: { plan: Plan }) {
         <Spec l="Profit Split" v={`${plan.split}%`} tone="brand" />
         <Spec l="Funding Type" v={plan.type === "instant" ? "Instant" : "Two-Step Evaluation"} />
       </dl>
-      <Button to={`/checkout/details?plan=${plan.type}-${plan.size}`} className="mt-5 w-full">
+      <Button
+        to="/checkout/details"
+        search={{ plan: `${plan.type}-${plan.size}` }}
+        className="mt-5 w-full"
+      >
         Select account <ArrowUpRight size={14} />
       </Button>
     </Card>

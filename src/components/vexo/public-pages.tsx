@@ -413,7 +413,11 @@ function PlanRow({ plan }: { plan: Plan }) {
           value={plan.type === "instant" ? "Direct" : money(plan.profitTarget ?? 0)}
         />
         <PlanMetric label="Profit split" value={`${plan.split}%`} />
-        <Button to={`/checkout/details?plan=${plan.type}-${plan.size}`} className="w-full">
+        <Button
+          to="/checkout/details"
+          search={{ plan: `${plan.type}-${plan.size}` }}
+          className="w-full"
+        >
           Select <ArrowRight size={14} />
         </Button>
       </div>

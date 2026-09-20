@@ -1,14 +1,17 @@
 import { Link, Outlet } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
+  ArrowUpRight,
   Bell,
   Cookie,
+  Home,
   LayoutDashboard,
   LifeBuoy,
   ListOrdered,
   LogOut,
   Menu,
   ShieldCheck,
+  TrendingUp,
   User,
   X,
 } from "lucide-react";
@@ -267,8 +270,24 @@ export function DashboardLayout() {
           >
             <Menu />
           </button>
-          <div className="hidden items-center gap-2 text-[10px] uppercase text-dim kicker lg:flex">
-            <i className="h-1.5 w-1.5 rounded-full bg-success" /> Systems operational
+          <div className="flex items-center gap-2.5">
+            <Link
+              to="/"
+              className="flex items-center gap-1.5 rounded-sm border border-line bg-panel px-3 py-1.5 text-xs font-medium text-muted transition hover:bg-soft hover:text-bright"
+            >
+              <Home size={14} />
+              <span className="hidden sm:inline">Main Website</span>
+            </Link>
+            <Link
+              to="/accounts"
+              className="hidden items-center gap-1.5 rounded-sm border border-brand/30 bg-brand/10 px-3 py-1.5 text-xs font-medium text-brand-soft transition hover:bg-brand/20 sm:flex"
+            >
+              <TrendingUp size={14} />
+              New Account
+            </Link>
+            <div className="hidden items-center gap-2 text-[10px] uppercase text-dim kicker lg:flex">
+              <i className="h-1.5 w-1.5 rounded-full bg-success" /> Systems operational
+            </div>
           </div>
           <div className="relative flex items-center gap-3">
             <button
@@ -350,6 +369,23 @@ function DashNav({ close }: { close?: () => void }) {
             {label}
           </Link>
         ))}
+        <div className="pt-4 pb-1.5 px-3 text-[9px] uppercase text-dim kicker">Explore</div>
+        <Link
+          to="/accounts"
+          onClick={close}
+          className="flex items-center gap-3 rounded-sm border border-transparent px-3 py-2 text-xs font-medium uppercase text-muted transition hover:bg-soft hover:text-bright"
+        >
+          <TrendingUp size={16} />
+          Trading Accounts
+        </Link>
+        <Link
+          to="/"
+          onClick={close}
+          className="flex items-center gap-3 rounded-sm border border-transparent px-3 py-2 text-xs font-medium uppercase text-muted transition hover:bg-soft hover:text-bright"
+        >
+          <Home size={16} />
+          Main Website
+        </Link>
       </nav>
       <button
         type="button"
