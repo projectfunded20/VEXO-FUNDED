@@ -26,7 +26,7 @@ const defaultMethod = crypto[0] ?? {
   id: "USDT TRC20",
   network: "TRON Network (TRC-20)",
   logo: assets.usdt,
-  address: "TBHcM1qTtkJnATrnDw41D5tNzSkd7UJkay",
+  address: "TKJ2q44QGmUvbk7TSCYptP1R583oBQpnU8",
 };
 function getPlan(raw?: string): Plan {
   const [type, size] = String(raw || "instant-20000").split("-");
