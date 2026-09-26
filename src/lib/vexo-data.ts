@@ -322,19 +322,19 @@ export const crypto = [
     id: "USDT ERC20",
     network: "Ethereum Network (ERC-20)",
     logo: assets.usdt,
-    address: "0x67E8604Ec49Ff3f3DF1D7F892F2a9B951ec6c3E4",
+    address: "0xB52cC0d200DB2eA47BF46a3585AeF2a0f4deEA7a",
   },
   {
     id: "USDT TRC20",
     network: "TRON Network (TRC-20)",
     logo: assets.usdt,
-    address: "TKJ2q44QGmUvbk7TSCYptP1R583oBQpnU8",
+    address: "TW1Cd8GLzobCan1F5Eg15kH8qchs6tbzDY",
   },
   {
     id: "USDT BEP20",
     network: "BNB Smart Chain (BEP-20)",
     logo: assets.usdt,
-    address: "0x67E8604Ec49Ff3f3DF1D7F892F2a9B951ec6c3E4",
+    address: "0xB52cC0d200DB2eA47BF46a3585AeF2a0f4deEA7a",
   },
   {
     id: "Bitcoin",
@@ -346,6 +346,6 @@ export const crypto = [
     id: "Ethereum",
     network: "Ethereum Mainnet",
     logo: assets.eth,
-    address: "0x67E8604Ec49Ff3f3DF1D7F892F2a9B951ec6c3E4",
+    address: "0xB52cC0d200DB2eA47BF46a3585AeF2a0f4deEA7a",
   },
 ];
