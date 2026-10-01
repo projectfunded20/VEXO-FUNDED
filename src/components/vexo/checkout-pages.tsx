@@ -149,26 +149,14 @@ export function PaymentStep() {
   const [couponError, setCouponError] = useState("");
 
   const handleApplyCoupon = () => {
-    const code = coupon.trim().toUpperCase();
+    const code = coupon.trim();
     if (!code) {
       setCouponError("Please enter a promo code.");
       setApplied(false);
       return;
     }
-    if (code !== "WELCOME01") {
-      setCouponError("Invalid promo code. Only 'WELCOME01' is accepted.");
-      setApplied(false);
-      return;
-    }
-    if (plan.type !== "instant") {
-      setCouponError(
-        "Promo code WELCOME01 is only valid for Instant accounts, not Challenge accounts.",
-      );
-      setApplied(false);
-      return;
-    }
-    setCouponError("");
-    setApplied(true);
+    setCouponError("This promo code has expired.");
+    setApplied(false);
   };
 
   const handleRemoveCoupon = () => {
@@ -177,8 +165,7 @@ export function PaymentStep() {
     setCouponError("");
   };
 
-  const discountAmount = applied && plan.type === "instant" ? Math.round(plan.price * 0.2857) : 0;
-  const total = plan.price - discountAmount;
+  const total = plan.price;
 
   return (
     <SiteLayout>
@@ -204,7 +191,7 @@ export function PaymentStep() {
                     handleApplyCoupon();
                   }
                 }}
-                placeholder="Enter promo code (e.g. WELCOME01)"
+                placeholder="Enter promo code"
                 className="min-w-0 flex-1 rounded-lg border border-line bg-ink px-3 py-2 uppercase"
               />
               <Button size="sm" onClick={handleApplyCoupon}>
@@ -215,9 +202,7 @@ export function PaymentStep() {
               <div className="mt-2.5 flex items-center justify-between rounded-lg border border-success/30 bg-success/10 px-3 py-2 text-xs text-success">
                 <div className="flex items-center gap-1.5 font-medium">
                   <Check size={14} className="shrink-0" />
-                  <span>
-                    Coupon “WELCOME01” applied! 28.57% discount (-${discountAmount}) applied.
-                  </span>
+                  <span>Promo code applied!</span>
                 </div>
                 <button
                   type="button"
@@ -275,7 +260,7 @@ export function PaymentStep() {
                     broker: s.broker || "Pocket Option",
                     method,
                     total,
-                    coupon: applied ? "WELCOME01" : "",
+                    coupon: "",
                   },
                 })
               }
@@ -299,9 +284,7 @@ export function DepositStep() {
   const nav = useNavigate();
   const plan = getPlan(s.plan);
   const method = crypto.find((m) => m.id === s.method) ?? defaultMethod;
-  const isCouponValid = s.coupon?.trim().toUpperCase() === "WELCOME01" && plan.type === "instant";
-  const discountAmount = isCouponValid ? Math.round(plan.price * 0.2857) : 0;
-  const total = plan.price - discountAmount;
+  const total = plan.price;
   const [agree, setAgree] = useState(false);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -318,7 +301,7 @@ export function DepositStep() {
         price: total,
         broker: s.broker || "Pocket Option",
         payment_method: method.id,
-        coupon: isCouponValid ? "WELCOME01" : null,
+        coupon: null,
       });
       nav({
         to: "/dashboard",
@@ -364,21 +347,7 @@ export function DepositStep() {
                   </div>
                   <div className="text-right">
                     <small className="text-muted">Total Amount</small>
-                    {isCouponValid ? (
-                      <div>
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span className="text-xs text-muted line-through">${plan.price}</span>
-                          <span className="num text-xl font-bold text-brand-soft">
-                            ${total} USD
-                          </span>
-                        </div>
-                        <p className="text-[11px] font-medium text-success">
-                          WELCOME01 (-28.57%) applied
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="num text-xl font-bold text-brand-soft">${total} USD</p>
-                    )}
+                    <p className="num text-xl font-bold text-brand-soft">${total} USD</p>
                   </div>
                 </div>
                 <div className="mt-5 flex flex-col gap-5 md:flex-row">
