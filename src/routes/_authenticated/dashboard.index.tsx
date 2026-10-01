@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Overview } from "@/components/vexo/dashboard-pages";
 export const Route = createFileRoute("/_authenticated/dashboard/")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    payment: typeof search.payment === "string" ? search.payment : undefined,
-    order: typeof search.order === "string" ? search.order : undefined,
+  validateSearch: (search: Record<string, unknown>): { payment?: string; order?: string } => ({
+    payment: typeof search["payment"] === "string" ? search["payment"] : undefined,
+    order: typeof search["order"] === "string" ? search["order"] : undefined,
   }),
   head: () => ({
     meta: [
