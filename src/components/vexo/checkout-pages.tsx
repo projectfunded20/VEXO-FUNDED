@@ -75,7 +75,19 @@ function Header({
             {money(plan.size)} {plan.type === "instant" ? "Instant" : "Evaluation"} Account
           </b>
         </span>
-        <b className="num text-brand-soft">{money(total)}</b>
+        <div className="text-right">
+          {total < plan.price ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted line-through">{money(plan.price)}</span>
+              <b className="num text-brand-soft">{money(total)}</b>
+              <span className="rounded bg-success/15 px-1.5 py-0.5 text-xs font-semibold text-success">
+                -28.57%
+              </span>
+            </div>
+          ) : (
+            <b className="num text-brand-soft">{money(total)}</b>
+          )}
+        </div>
       </div>
     </>
   );
@@ -134,7 +146,40 @@ export function PaymentStep() {
   const [method, setMethod] = useState("USDT TRC20");
   const [coupon, setCoupon] = useState("");
   const [applied, setApplied] = useState(false);
-  const total = applied ? Math.round(plan.price * 0.9) : plan.price;
+  const [couponError, setCouponError] = useState("");
+
+  const handleApplyCoupon = () => {
+    const code = coupon.trim().toUpperCase();
+    if (!code) {
+      setCouponError("Please enter a promo code.");
+      setApplied(false);
+      return;
+    }
+    if (code !== "WELCOME01") {
+      setCouponError("Invalid promo code. Only 'WELCOME01' is accepted.");
+      setApplied(false);
+      return;
+    }
+    if (plan.type !== "instant") {
+      setCouponError(
+        "Promo code WELCOME01 is only valid for Instant accounts, not Challenge accounts.",
+      );
+      setApplied(false);
+      return;
+    }
+    setCouponError("");
+    setApplied(true);
+  };
+
+  const handleRemoveCoupon = () => {
+    setApplied(false);
+    setCoupon("");
+    setCouponError("");
+  };
+
+  const discountAmount = applied && plan.type === "instant" ? Math.round(plan.price * 0.2857) : 0;
+  const total = plan.price - discountAmount;
+
   return (
     <SiteLayout>
       <main className="min-h-screen px-4 pb-20 pt-28">
@@ -148,18 +193,45 @@ export function PaymentStep() {
             <div className="mt-2 flex gap-2">
               <input
                 value={coupon}
-                onChange={(e) => setCoupon(e.target.value)}
-                placeholder="Enter coupon code"
+                onChange={(e) => {
+                  setCoupon(e.target.value);
+                  if (applied) setApplied(false);
+                  if (couponError) setCouponError("");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleApplyCoupon();
+                  }
+                }}
+                placeholder="Enter promo code (e.g. WELCOME01)"
                 className="min-w-0 flex-1 rounded-lg border border-line bg-ink px-3 py-2 uppercase"
               />
-              <Button size="sm" onClick={() => setApplied(coupon.trim().length > 0)}>
+              <Button size="sm" onClick={handleApplyCoupon}>
                 Apply
               </Button>
             </div>
             {applied && (
-              <p className="mt-2 text-xs text-success">
-                <Check size={13} className="inline" /> Coupon “{coupon.toUpperCase()}” applied! 10%
-                discount applied.
+              <div className="mt-2.5 flex items-center justify-between rounded-lg border border-success/30 bg-success/10 px-3 py-2 text-xs text-success">
+                <div className="flex items-center gap-1.5 font-medium">
+                  <Check size={14} className="shrink-0" />
+                  <span>
+                    Coupon “WELCOME01” applied! 28.57% discount (-${discountAmount}) applied.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveCoupon}
+                  className="ml-2 text-xs text-muted underline hover:text-bright"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+            {couponError && (
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-red-400">
+                <AlertCircle size={14} className="shrink-0" />
+                <span>{couponError}</span>
               </p>
             )}
           </Card>
@@ -203,7 +275,7 @@ export function PaymentStep() {
                     broker: s.broker || "Pocket Option",
                     method,
                     total,
-                    coupon: applied ? coupon.trim().toUpperCase() : "",
+                    coupon: applied ? "WELCOME01" : "",
                   },
                 })
               }
@@ -227,7 +299,9 @@ export function DepositStep() {
   const nav = useNavigate();
   const plan = getPlan(s.plan);
   const method = crypto.find((m) => m.id === s.method) ?? defaultMethod;
-  const total = Number(s.total) || plan.price;
+  const isCouponValid = s.coupon?.trim().toUpperCase() === "WELCOME01" && plan.type === "instant";
+  const discountAmount = isCouponValid ? Math.round(plan.price * 0.2857) : 0;
+  const total = plan.price - discountAmount;
   const [agree, setAgree] = useState(false);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -244,7 +318,7 @@ export function DepositStep() {
         price: total,
         broker: s.broker || "Pocket Option",
         payment_method: method.id,
-        coupon: s.coupon ?? null,
+        coupon: isCouponValid ? "WELCOME01" : null,
       });
       nav({
         to: "/dashboard",
@@ -276,7 +350,7 @@ export function DepositStep() {
               {error && (
                 <div className="mt-4 flex items-start gap-3 rounded-lg border border-brand/35 bg-panel-raised/90 p-3.5 text-sm shadow-sm">
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                  <span className="font-medium text-bright leading-relaxed">{error}</span>
+                  <span className="font-medium leading-relaxed text-bright">{error}</span>
                 </div>
               )}
               <div className="mt-6 rounded-xl border border-brand/30 bg-surface p-5">
@@ -290,7 +364,21 @@ export function DepositStep() {
                   </div>
                   <div className="text-right">
                     <small className="text-muted">Total Amount</small>
-                    <p className="num text-xl font-bold text-brand-soft">${total} USD</p>
+                    {isCouponValid ? (
+                      <div>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <span className="text-xs text-muted line-through">${plan.price}</span>
+                          <span className="num text-xl font-bold text-brand-soft">
+                            ${total} USD
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-medium text-success">
+                          WELCOME01 (-28.57%) applied
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="num text-xl font-bold text-brand-soft">${total} USD</p>
+                    )}
                   </div>
                 </div>
                 <div className="mt-5 flex flex-col gap-5 md:flex-row">
