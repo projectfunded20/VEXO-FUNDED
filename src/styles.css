@@ -162,3 +162,17 @@ button:disabled {
     scroll-behavior: auto !important;
   }
 }
+
+/* Hide default Tawk.to minimized widget launcher badge, attention grabbers, and bubbles */
+.tawk-min-container,
+div[class*="tawk-min-container"],
+.tawk-bubble-container,
+div[class*="tawk-bubble"],
+div[id*="tawk-bubble"],
+div[class*="tawk-custom-bubble"],
+iframe[title*="chat widget"][class*="tawk-min-container"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

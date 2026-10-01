@@ -27,6 +27,7 @@ import {
   type Plan,
 } from "@/lib/vexo-data";
 import { SiteLayout } from "./layouts";
+import { openSupportChat } from "./live-support";
 import tradingDesk from "@/assets/vexo-trading-desk.jpg";
 
 export function Home() {
@@ -572,35 +573,46 @@ export function Support() {
       <Section className="pt-0">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            [
-              Headphones,
-              "Live Chat",
-              "Connect instantly with our support team in real-time 24/7.",
-              "/support",
-            ],
-            [
-              LifeBuoy,
-              "Open a Ticket",
-              "Create a support ticket for account, billing, or technical issues.",
-              "/dashboard/support/new",
-            ],
-            [
-              MessageCircle,
-              "Browse the FAQ",
-              "Most questions about accounts, rules, and payouts are answered.",
-              "/faq",
-            ],
-            [Mail, "Email Us", "Reach our support team directly via email anytime.", "/contact"],
-          ].map(([I, t, b, to]) => (
-            <Card className="p-6" key={t as string}>
+            {
+              icon: Headphones,
+              title: "Live Chat",
+              desc: "Connect instantly with our support team in real-time 24/7.",
+              action: () => openSupportChat(),
+            },
+            {
+              icon: LifeBuoy,
+              title: "Open a Ticket",
+              desc: "Create a support ticket for account, billing, or technical issues.",
+              to: "/dashboard/support/new",
+            },
+            {
+              icon: MessageCircle,
+              title: "Browse the FAQ",
+              desc: "Most questions about accounts, rules, and payouts are answered.",
+              to: "/faq",
+            },
+            {
+              icon: Mail,
+              title: "Email Us",
+              desc: "Reach our support team directly via email anytime.",
+              to: "/contact",
+            },
+          ].map((item) => (
+            <Card className="p-6" key={item.title}>
               <div className="grid h-11 w-11 place-items-center rounded-lg bg-brand/10 text-brand">
-                <I size={20} />
+                <item.icon size={20} />
               </div>
-              <h3 className="mt-5 font-display text-lg font-semibold">{t as string}</h3>
-              <p className="mt-2 text-sm text-muted">{b as string}</p>
-              <Button to={to as string} variant="outline" size="sm" className="mt-5 w-full">
-                Continue <ArrowRight size={14} />
-              </Button>
+              <h3 className="mt-5 font-display text-lg font-semibold">{item.title}</h3>
+              <p className="mt-2 text-sm text-muted">{item.desc}</p>
+              {item.action ? (
+                <Button onClick={item.action} variant="outline" size="sm" className="mt-5 w-full">
+                  Start Chat <ArrowRight size={14} />
+                </Button>
+              ) : (
+                <Button to={item.to} variant="outline" size="sm" className="mt-5 w-full">
+                  Continue <ArrowRight size={14} />
+                </Button>
+              )}
             </Card>
           ))}
         </div>
