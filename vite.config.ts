@@ -19,5 +19,8 @@ export default defineConfig({
       process.env["NITRO_PRESET"] === "vercel"
         ? "vercel"
         : process.env["NITRO_PRESET"] || undefined,
+    vercel: {
+      entryFormat: "node",
+    },
   },
 });

@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-dev-runtime-Cw1VLpL7.js";import{n as t}from"./legal-status-D9CSiSr_.js";var n=e(),r=`/app/applet/src/routes/maintenance.tsx?tsr-split=component`,i=()=>(0,n.jsxDEV)(t,{kind:`maintenance`},void 0,!1,{fileName:r,lineNumber:2,columnNumber:30},void 0);export{i as component};

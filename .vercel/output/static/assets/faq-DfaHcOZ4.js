@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-dev-runtime-Cw1VLpL7.js";import{i as t}from"./public-pages-Bh0FOCib.js";var n=e(),r=`/app/applet/src/routes/faq.tsx?tsr-split=component`,i=()=>(0,n.jsxDEV)(t,{},void 0,!1,{fileName:r,lineNumber:2,columnNumber:30},void 0);export{i as component};

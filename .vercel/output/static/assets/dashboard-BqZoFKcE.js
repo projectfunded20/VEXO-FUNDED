@@ -1,1 +1,0 @@
-import{n as e}from"./layouts-BKoGyxfT.js";var t=e;export{t as component};
