@@ -1,0 +1,1 @@
+import{n as e}from"./auth-pages-CYlTrM5y.js";var t=e;export{t as component};
