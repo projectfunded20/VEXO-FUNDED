@@ -1,1 +1,0 @@
-import{c as e}from"./useSelector-Po_G4aGA.js";import{r as t}from"./checkout-pages-zUBxM6Wb.js";var n=e(),r=()=>(0,n.jsx)(t,{});export{r as component};

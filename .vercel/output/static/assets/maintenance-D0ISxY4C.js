@@ -1,1 +1,0 @@
-import{c as e}from"./useSelector-Po_G4aGA.js";import{n as t}from"./legal-status-CmaGACzh.js";var n=e(),r=()=>(0,n.jsx)(t,{kind:`maintenance`});export{r as component};

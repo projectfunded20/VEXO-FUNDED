@@ -1,1 +1,0 @@
-import{n as e}from"./auth-pages-CCQthF-a.js";var t=e;export{t as component};

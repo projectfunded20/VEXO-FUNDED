@@ -1,1 +1,0 @@
-import{n as e}from"./layouts-Ll16d3jJ.js";var t=e;export{t as component};

@@ -66,32 +66,10 @@ function safePath(value: unknown): string | null {
     : null;
 }
 
-function parseSearchQuery(query: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  if (!query) return result;
-  const clean = query.startsWith("?") ? query.slice(1) : query;
-  clean.split("&").forEach((part) => {
-    if (!part) return;
-    const eqIdx = part.indexOf("=");
-    if (eqIdx === -1) {
-      result[decodeURIComponent(part)] = "";
-    } else {
-      const k = part.slice(0, eqIdx);
-      const v = part.slice(eqIdx + 1);
-      try {
-        result[decodeURIComponent(k)] = decodeURIComponent(v);
-      } catch {
-        result[k] = v;
-      }
-    }
-  });
-  return result;
-}
-
 function navigateSafe(nav: ReturnType<typeof useNavigate>, target: string) {
   if (target.includes("?")) {
     const [pathname, queryString] = target.split("?");
-    const searchParams = parseSearchQuery(queryString);
+    const searchParams = Object.fromEntries(new URLSearchParams(queryString).entries());
     nav({ to: pathname as never, search: searchParams as never });
   } else {
     nav({ to: target as never });

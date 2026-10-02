@@ -314,7 +314,6 @@ export function DashboardLayout() {
           <Outlet />
         </main>
       </div>
-      <LiveSupport />
     </div>
   );
 }

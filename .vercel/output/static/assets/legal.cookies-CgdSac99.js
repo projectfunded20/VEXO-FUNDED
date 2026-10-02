@@ -1,1 +1,0 @@
-import{c as e}from"./useSelector-Po_G4aGA.js";import{t}from"./legal-status-CmaGACzh.js";var n=e(),r=()=>(0,n.jsx)(t,{kind:`cookies`});export{r as component};
