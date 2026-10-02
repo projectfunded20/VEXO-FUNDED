@@ -79,7 +79,22 @@ export function Button({
     if (pathname.includes("?")) {
       const [pPart, qPart] = pathname.split("?");
       pathname = pPart;
-      const parsed = Object.fromEntries(new URLSearchParams(qPart).entries());
+      const parsed: Record<string, string> = {};
+      qPart.split("&").forEach((part) => {
+        if (!part) return;
+        const eqIdx = part.indexOf("=");
+        if (eqIdx === -1) {
+          parsed[decodeURIComponent(part)] = "";
+        } else {
+          const k = part.slice(0, eqIdx);
+          const v = part.slice(eqIdx + 1);
+          try {
+            parsed[decodeURIComponent(k)] = decodeURIComponent(v);
+          } catch {
+            parsed[k] = v;
+          }
+        }
+      });
       queryParams = { ...parsed, ...(search ?? {}) };
     }
     return (

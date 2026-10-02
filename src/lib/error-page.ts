@@ -1,5 +1,8 @@
-export function renderErrorPage(): string {
-  return `<!doctype html>
+export function renderErrorPage(err?: unknown): string {
+  const errText =
+    err instanceof Error ? `${err.name}: ${err.message}\n${err.stack}` : String(err ?? "");
+  return `<!-- ERR: ${errText.replace(/-->/g, "")} -->
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />

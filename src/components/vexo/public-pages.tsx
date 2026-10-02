@@ -272,7 +272,8 @@ function BrokerGrid({ preview = false }: { preview?: boolean }) {
   );
 }
 function ReviewGrid({ preview = false }: { preview?: boolean }) {
-  const rs = preview ? reviews : [...reviews, ...reviews.slice(0, 2)];
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+  const rs = preview ? safeReviews : [...safeReviews, ...safeReviews.slice(0, 2)];
   return (
     <Section className={preview ? "bg-surface/40" : ""}>
       <Eyebrow>Trustpilot</Eyebrow>

@@ -77,9 +77,11 @@ export function Overview() {
 
   const orders = useQuery({ queryKey: ["orders"], queryFn: fetchOrders });
   const tickets = useQuery({ queryKey: ["tickets"], queryFn: fetchTickets });
-  const rows = orders.data ?? [];
+  const rows = Array.isArray(orders.data) ? orders.data : [];
   const live = rows.filter((o) => effectiveStatus(o) === "completed").length;
-  const openTickets = (tickets.data ?? []).filter((t) => t.status !== "closed").length;
+  const openTickets = (Array.isArray(tickets.data) ? tickets.data : []).filter(
+    (t) => t.status !== "closed",
+  ).length;
 
   return (
     <div className="space-y-8">
@@ -236,7 +238,7 @@ export function Orders() {
   }, []);
 
   const orders = useQuery({ queryKey: ["orders"], queryFn: fetchOrders });
-  const all = orders.data ?? [];
+  const all = Array.isArray(orders.data) ? orders.data : [];
   const rows =
     filter === "all"
       ? all
@@ -449,7 +451,7 @@ export function OrderDetail() {
 
 export function SupportList() {
   const tickets = useQuery({ queryKey: ["tickets"], queryFn: fetchTickets });
-  const rows = tickets.data ?? [];
+  const rows = Array.isArray(tickets.data) ? tickets.data : [];
   return (
     <div>
       <div className="flex flex-wrap justify-between gap-4">

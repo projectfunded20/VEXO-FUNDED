@@ -109,7 +109,24 @@ function getLocal<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
     const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(fallback)) {
+      if (Array.isArray(parsed)) return parsed as T;
+      try {
+        localStorage.setItem(key, JSON.stringify(fallback));
+      } catch {
+        // ignore
+      }
+      return fallback;
+    }
+    if (fallback !== null && typeof fallback === "object") {
+      if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+        return parsed as T;
+      }
+      return fallback;
+    }
+    return parsed as T;
   } catch {
     return fallback;
   }
@@ -126,7 +143,8 @@ function setLocal<T>(key: string, value: T) {
 
 export async function fetchOrders(): Promise<OrderRow[]> {
   const user = await getCurrentUser();
-  const cached = getLocal<OrderRow[]>("vexo_firebase_orders", []);
+  const cachedRaw = getLocal<OrderRow[]>("vexo_firebase_orders", []);
+  const cached = Array.isArray(cachedRaw) ? cachedRaw : [];
 
   try {
     const ordersRef = collection(db, "orders");
@@ -150,7 +168,7 @@ export async function fetchOrders(): Promise<OrderRow[]> {
     });
 
     // Merge with any locally placed orders if not yet replicated
-    const combined = [...fetched];
+    const combined = Array.isArray(fetched) ? [...fetched] : [];
     for (const c of cached) {
       if (!combined.some((o) => o.reference === c.reference)) {
         combined.push(c);
@@ -180,7 +198,8 @@ export async function fetchOrders(): Promise<OrderRow[]> {
 }
 
 export async function fetchOrder(refOrId: string): Promise<OrderRow | null> {
-  const cached = getLocal<OrderRow[]>("vexo_firebase_orders", []);
+  const cachedRaw = getLocal<OrderRow[]>("vexo_firebase_orders", []);
+  const cached = Array.isArray(cachedRaw) ? cachedRaw : [];
   const localMatch = cached.find((o) => o.reference === refOrId || o.id === refOrId);
 
   try {
@@ -257,7 +276,8 @@ export async function createOrder(input: {
   };
 
   // Cache locally first for instant feedback
-  const cached = getLocal<OrderRow[]>("vexo_firebase_orders", []);
+  const cachedRaw = getLocal<OrderRow[]>("vexo_firebase_orders", []);
+  const cached = Array.isArray(cachedRaw) ? cachedRaw : [];
   setLocal("vexo_firebase_orders", [newOrder, ...cached]);
 
   // Persist into Firebase Firestore
@@ -292,7 +312,8 @@ export type MessageRow = {
 
 export async function fetchTickets(): Promise<TicketRow[]> {
   const user = await getCurrentUser();
-  const cached = getLocal<TicketRow[]>("vexo_firebase_tickets", []);
+  const cachedRaw = getLocal<TicketRow[]>("vexo_firebase_tickets", []);
+  const cached = Array.isArray(cachedRaw) ? cachedRaw : [];
 
   try {
     const ticketsRef = collection(db, "support_tickets");
@@ -312,7 +333,7 @@ export async function fetchTickets(): Promise<TicketRow[]> {
       fetched.push({ ...(d.data() as TicketRow), id: d.id });
     });
 
-    const combined = [...fetched];
+    const combined = Array.isArray(fetched) ? [...fetched] : [];
     for (const c of cached) {
       if (!combined.some((t) => t.id === c.id || t.reference === c.reference)) {
         combined.push(c);
@@ -329,8 +350,10 @@ export async function fetchTickets(): Promise<TicketRow[]> {
 }
 
 export async function fetchTicket(reference: string) {
-  const cachedTickets = getLocal<TicketRow[]>("vexo_firebase_tickets", []);
-  const cachedMessages = getLocal<MessageRow[]>("vexo_firebase_messages", []);
+  const cachedTicketsRaw = getLocal<TicketRow[]>("vexo_firebase_tickets", []);
+  const cachedTickets = Array.isArray(cachedTicketsRaw) ? cachedTicketsRaw : [];
+  const cachedMessagesRaw = getLocal<MessageRow[]>("vexo_firebase_messages", []);
+  const cachedMessages = Array.isArray(cachedMessagesRaw) ? cachedMessagesRaw : [];
 
   try {
     const q = query(
@@ -412,10 +435,12 @@ export async function createTicket(input: {
     created_at: now,
   };
 
-  const cachedT = getLocal<TicketRow[]>("vexo_firebase_tickets", []);
+  const cachedTRaw = getLocal<TicketRow[]>("vexo_firebase_tickets", []);
+  const cachedT = Array.isArray(cachedTRaw) ? cachedTRaw : [];
   setLocal("vexo_firebase_tickets", [newTicket, ...cachedT]);
 
-  const cachedM = getLocal<MessageRow[]>("vexo_firebase_messages", []);
+  const cachedMRaw = getLocal<MessageRow[]>("vexo_firebase_messages", []);
+  const cachedM = Array.isArray(cachedMRaw) ? cachedMRaw : [];
   setLocal("vexo_firebase_messages", [...cachedM, firstMessage]);
 
   try {
@@ -441,10 +466,12 @@ export async function replyToTicket(ticketId: string, body: string) {
     created_at: now,
   };
 
-  const cachedM = getLocal<MessageRow[]>("vexo_firebase_messages", []);
+  const cachedMRaw = getLocal<MessageRow[]>("vexo_firebase_messages", []);
+  const cachedM = Array.isArray(cachedMRaw) ? cachedMRaw : [];
   setLocal("vexo_firebase_messages", [...cachedM, message]);
 
-  const cachedT = getLocal<TicketRow[]>("vexo_firebase_tickets", []);
+  const cachedTRaw = getLocal<TicketRow[]>("vexo_firebase_tickets", []);
+  const cachedT = Array.isArray(cachedTRaw) ? cachedTRaw : [];
   setLocal(
     "vexo_firebase_tickets",
     cachedT.map((t) => (t.id === ticketId ? { ...t, updated_at: now } : t)),

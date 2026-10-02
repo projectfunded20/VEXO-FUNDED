@@ -14,8 +14,10 @@ export default defineConfig({
   },
   nitro: {
     preset:
-      process.env.VERCEL || process.env.NOW_BUILDER || process.env.NITRO_PRESET === "vercel"
+      process.env["VERCEL"] ||
+      process.env["NOW_BUILDER"] ||
+      process.env["NITRO_PRESET"] === "vercel"
         ? "vercel"
-        : process.env.NITRO_PRESET || undefined,
+        : process.env["NITRO_PRESET"] || undefined,
   },
 });
